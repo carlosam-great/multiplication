@@ -1,0 +1,727 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplication Master!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .question-area {
+            text-align: center;
+            margin: 40px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .question {
+            font-size: 3em;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .answer-display {
+            font-size: 2.5em;
+            color: #667eea;
+            min-height: 60px;
+            background: white;
+            border-radius: 15px;
+            padding: 10px;
+            display: inline-block;
+            min-width: 150px;
+            border: 4px solid #667eea;
+        }
+
+        .number-pad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .number-btn {
+            font-size: 2em;
+            padding: 20px;
+            border: none;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.1s, box-shadow 0.1s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .number-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .number-btn:active {
+            transform: translateY(0);
+        }
+
+        .zero-btn {
+            grid-column: 2;
+        }
+
+        .submit-btn {
+            grid-column: 3;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            font-size: 1.5em;
+        }
+
+        .clear-btn {
+            grid-column: 1;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #333;
+            font-size: 1.5em;
+        }
+
+        .timer {
+            text-align: center;
+            font-size: 1.5em;
+            margin: 20px 0;
+            color: #333;
+        }
+
+        .timer-bar {
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .timer-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+            transition: width 0.1s linear;
+        }
+
+        .feedback {
+            text-align: center;
+            font-size: 2em;
+            font-weight: bold;
+            margin: 20px 0;
+            min-height: 50px;
+            animation: fadeIn 0.3s;
+        }
+
+        .correct {
+            color: #4caf50;
+        }
+
+        .incorrect {
+            color: #f44336;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .celebrate {
+            animation: bounce 0.5s;
+        }
+
+        .start-screen, .level-complete {
+            text-align: center;
+        }
+
+        .start-btn, .next-level-btn, .reset-btn {
+            font-size: 1.5em;
+            padding: 20px 40px;
+            border: none;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .start-btn:hover, .next-level-btn:hover, .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #333;
+            font-size: 1em;
+            padding: 10px 20px;
+            margin-left: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .instructions {
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        .progress-info {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        .weakness-indicator {
+            background: #fff3e0;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+    </style>
+
+    <script>
+      
+      const files = {
+        
+      }
+    
+
+
+      window.fs = {}
+      window.fs.readFile = (fileName) => {
+        // return array buffer
+        return new Promise((resolve) => {
+          const content = files[fileName]
+          const decoded = atob(content)
+          const arr = new Uint8Array(decoded.length)
+          for (let i = 0; i < decoded.length; i++) {
+            arr[i] = decoded.charCodeAt(i)
+          }
+          resolve(arr)
+        })
+      }
+
+      // stub out window.user.get, window.db.get and window.db.set so that it works when you download the html doc
+      window.db = {}
+      window.db.get = (key) => {
+        // use localStorage to store the artifact
+        const value = localStorage.getItem(key)
+        if (value) {
+          return JSON.parse(value)
+        }
+
+        return null
+      }
+
+      window.db.set = (key, value) => {
+        // use localStorage to store the artifact
+        localStorage.setItem(key, JSON.stringify(value))
+      }
+
+      window.user = {}
+      window.user.get = () => {
+        return {
+          userId: "user-id-placeholder",
+          email: "placeholder@test.com"
+        }
+      }
+
+    </script>
+    </head>
+<body>
+    <div class="game-container">
+        <h1>🌟 Multiplication Master! 🌟</h1>
+        
+        <div id="startScreen" class="start-screen">
+            <div class="instructions">
+                <h2>How to Play:</h2>
+                <p>✨ Answer multiplication questions correctly!</p>
+                <p>⏱️ Each level gives you less time to answer</p>
+                <p>🎯 Get 5 correct answers to move to the next level</p>
+                <p>🔢 Click the numbers or use your keyboard</p>
+                <p>❌ No backspace - choose carefully!</p>
+                <p>🧠 The game learns your weak areas and helps you improve!</p>
+            </div>
+            <div id="welcomeBack" class="progress-info hidden">
+                <h3>Welcome Back! 🎉</h3>
+                <p>You left off at <strong>Level <span id="savedLevel"></span></strong></p>
+                <p>Total Score: <strong><span id="savedScore"></span></strong></p>
+            </div>
+            <div class="button-group">
+                <button class="start-btn" onclick="startGame(false)">Continue Game</button>
+                <button class="reset-btn" onclick="startGame(true)">Start Fresh</button>
+            </div>
+        </div>
+
+        <div id="gameScreen" class="hidden">
+            <div class="stats">
+                <div class="stat-box">Level: <span id="level">1</span></div>
+                <div class="stat-box">Score: <span id="score">0</span></div>
+                <div class="stat-box">Streak: <span id="streak">0</span></div>
+            </div>
+
+            <div class="weakness-indicator" id="weaknessInfo">
+                🎯 Focusing on areas that need practice...
+            </div>
+
+            <div class="timer">
+                Time Left: <span id="timeLeft">15</span>s
+                <div class="timer-bar">
+                    <div class="timer-fill" id="timerFill"></div>
+                </div>
+            </div>
+
+            <div class="question-area">
+                <div class="question" id="question">7 × 8 = ?</div>
+                <div class="answer-display" id="answerDisplay">_</div>
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+
+            <div class="number-pad">
+                <button class="number-btn" onclick="addDigit(1)">1</button>
+                <button class="number-btn" onclick="addDigit(2)">2</button>
+                <button class="number-btn" onclick="addDigit(3)">3</button>
+                <button class="number-btn" onclick="addDigit(4)">4</button>
+                <button class="number-btn" onclick="addDigit(5)">5</button>
+                <button class="number-btn" onclick="addDigit(6)">6</button>
+                <button class="number-btn" onclick="addDigit(7)">7</button>
+                <button class="number-btn" onclick="addDigit(8)">8</button>
+                <button class="number-btn" onclick="addDigit(9)">9</button>
+                <button class="number-btn clear-btn" onclick="clearAnswer()">Clear</button>
+                <button class="number-btn zero-btn" onclick="addDigit(0)">0</button>
+                <button class="number-btn submit-btn" onclick="submitAnswer()">✓</button>
+            </div>
+        </div>
+
+        <div id="levelComplete" class="level-complete hidden">
+            <h2>🎉 Level Complete! 🎉</h2>
+            <p style="font-size: 1.5em; margin: 20px 0;">Great job! Ready for the next challenge?</p>
+            <button class="next-level-btn" onclick="nextLevel()">Next Level!</button>
+        </div>
+    </div>
+
+    <script>
+        let currentLevel = 1;
+        let score = 0;
+        let streak = 0;
+        let currentAnswer = '';
+        let correctAnswer = 0;
+        let num1 = 0;
+        let num2 = 0;
+        let timeLeft = 15;
+        let maxTime = 15;
+        let timerInterval;
+        let questionsInLevel = 0;
+
+        // Adaptive learning system
+        let performanceData = {}; // Track performance for each multiplication fact
+        let weakTables = []; // Tables that need reinforcement
+
+        const levelTimes = {
+            1: 15,
+            2: 12,
+            3: 10,
+            4: 8,
+            5: 6
+        };
+
+        const encouragements = [
+            "Amazing! 🌟",
+            "Fantastic! 🎉",
+            "You're a star! ⭐",
+            "Brilliant! 💫",
+            "Super work! 🚀",
+            "Excellent! 🎯"
+        ];
+
+        // Initialize performance tracking
+        function initPerformanceData() {
+            for (let i = 1; i <= 12; i++) {
+                for (let j = 1; j <= 12; j++) {
+                    const key = `${i}x${j}`;
+                    if (!performanceData[key]) {
+                        performanceData[key] = {
+                            correct: 0,
+                            incorrect: 0,
+                            lastAsked: 0
+                        };
+                    }
+                }
+            }
+        }
+
+        // Load saved game data
+        function loadGameData() {
+            try {
+                const savedData = localStorage.getItem('multiplicationGameData');
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    currentLevel = data.level || 1;
+                    score = data.score || 0;
+                    performanceData = data.performanceData || {};
+                    
+                    // Show welcome back message
+                    document.getElementById('savedLevel').textContent = currentLevel;
+                    document.getElementById('savedScore').textContent = score;
+                    document.getElementById('welcomeBack').classList.remove('hidden');
+                    
+                    return true;
+                }
+            } catch (e) {
+                console.log('No saved data found');
+            }
+            return false;
+        }
+
+        // Save game data
+        function saveGameData() {
+            const data = {
+                level: currentLevel,
+                score: score,
+                performanceData: performanceData
+            };
+            localStorage.setItem('multiplicationGameData', JSON.stringify(data));
+        }
+
+        // Analyze weak areas
+        function analyzeWeaknesses() {
+            const tableScores = {};
+            
+            // Calculate success rate for each table (1-12)
+            for (let table = 1; table <= 12; table++) {
+                let correct = 0;
+                let total = 0;
+                
+                for (let i = 1; i <= 12; i++) {
+                    const key1 = `${table}x${i}`;
+                    const key2 = `${i}x${table}`;
+                    
+                    if (performanceData[key1]) {
+                        correct += performanceData[key1].correct;
+                        total += performanceData[key1].correct + performanceData[key1].incorrect;
+                    }
+                    if (performanceData[key2] && key1 !== key2) {
+                        correct += performanceData[key2].correct;
+                        total += performanceData[key2].correct + performanceData[key2].incorrect;
+                    }
+                }
+                
+                tableScores[table] = {
+                    successRate: total > 0 ? correct / total : 0.5,
+                    total: total
+                };
+            }
+            
+            // Find tables with low success rates (below 70%)
+            weakTables = [];
+            for (let table = 1; table <= 12; table++) {
+                if (tableScores[table].total >= 3 && tableScores[table].successRate < 0.7) {
+                    weakTables.push({
+                        table: table,
+                        rate: tableScores[table].successRate
+                    });
+                }
+            }
+            
+            // Sort by success rate (weakest first)
+            weakTables.sort((a, b) => a.rate - b.rate);
+            
+            // Update weakness indicator
+            updateWeaknessIndicator();
+        }
+
+        function updateWeaknessIndicator() {
+            const indicator = document.getElementById('weaknessInfo');
+            if (weakTables.length > 0) {
+                const weakestTables = weakTables.slice(0, 3).map(w => w.table).join(', ');
+                indicator.textContent = `🎯 Practicing tables: ${weakestTables}`;
+                indicator.style.background = '#fff3e0';
+            } else {
+                indicator.textContent = '🌟 Great job! All tables are strong!';
+                indicator.style.background = '#e8f5e9';
+            }
+        }
+
+        function startGame(reset) {
+            if (reset) {
+                currentLevel = 1;
+                score = 0;
+                performanceData = {};
+                localStorage.removeItem('multiplicationGameData');
+            }
+            
+            initPerformanceData();
+            analyzeWeaknesses();
+            
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            
+            streak = 0;
+            questionsInLevel = 0;
+            maxTime = levelTimes[currentLevel];
+            updateStats();
+            generateQuestion();
+            startTimer();
+        }
+
+        function generateQuestion() {
+            // 70% chance to focus on weak areas if they exist
+            if (weakTables.length > 0 && Math.random() < 0.7) {
+                // Pick from weakest tables
+                const weakTable = weakTables[Math.floor(Math.random() * Math.min(3, weakTables.length))].table;
+                
+                if (Math.random() < 0.5) {
+                    num1 = weakTable;
+                    num2 = Math.floor(Math.random() * 12) + 1;
+                } else {
+                    num1 = Math.floor(Math.random() * 12) + 1;
+                    num2 = weakTable;
+                }
+            } else {
+                // Random question
+                num1 = Math.floor(Math.random() * 12) + 1;
+                num2 = Math.floor(Math.random() * 12) + 1;
+            }
+            
+            correctAnswer = num1 * num2;
+            document.getElementById('question').textContent = `${num1} × ${num2} = ?`;
+            currentAnswer = '';
+            document.getElementById('answerDisplay').textContent = '_';
+            document.getElementById('feedback').textContent = '';
+        }
+
+        function addDigit(digit) {
+            if (currentAnswer.length < 3) {
+                currentAnswer += digit;
+                document.getElementById('answerDisplay').textContent = currentAnswer;
+            }
+        }
+
+        function clearAnswer() {
+            currentAnswer = '';
+            document.getElementById('answerDisplay').textContent = '_';
+        }
+
+        function submitAnswer() {
+            if (currentAnswer === '') return;
+
+            const userAnswer = parseInt(currentAnswer);
+            const feedbackEl = document.getElementById('feedback');
+            const key = `${num1}x${num2}`;
+
+            if (userAnswer === correctAnswer) {
+                score++;
+                streak++;
+                questionsInLevel++;
+                
+                // Update performance data
+                performanceData[key].correct++;
+                performanceData[key].lastAsked = Date.now();
+                
+                feedbackEl.textContent = encouragements[Math.floor(Math.random() * encouragements.length)];
+                feedbackEl.className = 'feedback correct celebrate';
+                
+                updateStats();
+                saveGameData();
+                analyzeWeaknesses();
+
+                if (questionsInLevel >= 5) {
+                    setTimeout(() => {
+                        completeLevel();
+                    }, 1500);
+                } else {
+                    setTimeout(() => {
+                        generateQuestion();
+                        resetTimer();
+                    }, 1500);
+                }
+            } else {
+                streak = 0;
+                
+                // Update performance data
+                performanceData[key].incorrect++;
+                performanceData[key].lastAsked = Date.now();
+                
+                feedbackEl.textContent = `Oops! The answer was ${correctAnswer}. Try the next one! 💪`;
+                feedbackEl.className = 'feedback incorrect';
+                updateStats();
+                saveGameData();
+                analyzeWeaknesses();
+                
+                setTimeout(() => {
+                    generateQuestion();
+                    resetTimer();
+                }, 2000);
+            }
+        }
+
+        function completeLevel() {
+            clearInterval(timerInterval);
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('levelComplete').classList.remove('hidden');
+        }
+
+        function nextLevel() {
+            currentLevel++;
+            if (currentLevel > 5) {
+                currentLevel = 5;
+            }
+            questionsInLevel = 0;
+            maxTime = levelTimes[currentLevel];
+            
+            saveGameData();
+            
+            document.getElementById('levelComplete').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            
+            updateStats();
+            generateQuestion();
+            resetTimer();
+            startTimer();
+        }
+
+        function updateStats() {
+            document.getElementById('level').textContent = currentLevel;
+            document.getElementById('score').textContent = score;
+            document.getElementById('streak').textContent = streak;
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timeLeft').textContent = timeLeft;
+                
+                const percentage = (timeLeft / maxTime) * 100;
+                document.getElementById('timerFill').style.width = percentage + '%';
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    streak = 0;
+                    
+                    // Mark as incorrect if time runs out
+                    const key = `${num1}x${num2}`;
+                    performanceData[key].incorrect++;
+                    performanceData[key].lastAsked = Date.now();
+                    
+                    document.getElementById('feedback').textContent = `Time's up! The answer was ${correctAnswer}. Next question! ⏰`;
+                    document.getElementById('feedback').className = 'feedback incorrect';
+                    updateStats();
+                    saveGameData();
+                    analyzeWeaknesses();
+                    
+                    setTimeout(() => {
+                        generateQuestion();
+                        resetTimer();
+                        startTimer();
+                    }, 2000);
+                }
+            }, 1000);
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timeLeft = maxTime;
+            document.getElementById('timeLeft').textContent = timeLeft;
+            document.getElementById('timerFill').style.width = '100%';
+        }
+
+        // Keyboard support
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('gameScreen').classList.contains('hidden')) return;
+
+            if (e.key >= '0' && e.key <= '9') {
+                addDigit(parseInt(e.key));
+            } else if (e.key === 'Enter') {
+                submitAnswer();
+            } else if (e.key === 'Escape') {
+                clearAnswer();
+            }
+            // Disable backspace and delete
+            if (e.key === 'Backspace' || e.key === 'Delete') {
+                e.preventDefault();
+            }
+        });
+
+        // Load saved data on page load
+        window.addEventListener('load', () => {
+            loadGameData();
+            initPerformanceData();
+        });
+    </script>
+</body>
+</html>
